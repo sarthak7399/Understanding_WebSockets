@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Streaming Client</title>
+</head>
+
+<body>
+    <button id="connectButton">Connect</button>
+    <audio controls id="audioPlayer"></audio>
+
+    <script>
+        const connectButton = document.getElementById('connectButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        let websocket;
+        let audioChunks = []; // Buffer to store audio chunks
+        let currentChunkIndex = 0; // Index of the currently playing chunk
+
+        connectButton.addEventListener('click', () => {
+            websocket = new WebSocket('ws://localhost:8000/audio');
+
+            websocket.onopen = () => {
+                console.log('WebSocket connection established');
+            };
+
+            websocket.onmessage = async (event) => {
+                const audioData = event.data;
+                if (audioData instanceof Blob) {
+                    audioChunks.push(audioData); // Add the received audio chunk to the buffer
+                    if (audioChunks.length === 1) {
+                        // If this is the first chunk, start playing
+                        playNextChunk();
+                    }
+                }
+            };
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            // When the audio playback ends, play the next chunk
+            playNextChunk();
+        });
+
+        async function playNextChunk() {
+            if (currentChunkIndex >= audioChunks.length) {
+                return; // All chunks have been played
+            }
+            const audioBlob = audioChunks[currentChunkIndex]; // Get the next audio chunk
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioUrl;
+            await audioPlayer.play(); // Play the audio chunk
+            currentChunkIndex++; // Move to the next chunk
+        }
+    </script>
+</body>
+
+</html>
