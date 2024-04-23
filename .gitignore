@@ -1,2 +1,5 @@
+.env
+.editorconfig
 WebSocketsENV/
 __pycache__/
+audio.mp3

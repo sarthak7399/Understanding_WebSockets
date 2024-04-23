@@ -6,7 +6,7 @@ app = FastAPI()
 async def stream_audio(websocket: WebSocket):
     await websocket.accept()
     try:
-        with open("static/audio.mp3", "rb") as audio_file:
+        with open("../static/audio.mp3", "rb") as audio_file:
             while True:
                 audio_chunk = audio_file.read(1024 * 1024)  # Read 1MB chunk of the MP3 file
                 if not audio_chunk:
