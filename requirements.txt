@@ -1,0 +1,6 @@
+python-dotenv
+deepgram-sdk
+fastapi
+requests
+# git+https://github.com/coqui-ai/TTS  # from Github
+# torch
