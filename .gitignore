@@ -3,3 +3,4 @@
 WebSocketsENV/
 __pycache__/
 audio.mp3
+.ipynb_checkpoints
