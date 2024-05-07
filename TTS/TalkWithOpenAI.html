@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Text & Text-to-Audio Streaming</title>
+</head>
+
+<body>
+    <h2>Talk with Agent</h2>
+    <!-- <h3>Speech-to-Text</h3> -->
+    <!-- Start listening button -->
+    <button id="startButton" onclick="startListening()">Start Listening</button>
+    <div id="responseContainer"></div> <!-- Container to display backend response -->
+
+    <!-- <h3>Text-to-Audio Streaming</h3> -->
+    <!-- Hidden audio element to play the audio -->
+    <audio id="hiddenAudio" style="display: none;"></audio>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const responseContainer = document.getElementById('responseContainer');
+        let isListening = false;
+
+        // Update WebSocket URL for speech-to-text
+        const sttsWebSocket = new WebSocket('ws://localhost:8000/stts');
+
+        async function startListening() {
+            isListening = true;
+            startButton.textContent = "Please Listen";
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.start();
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    sendDataToBackend(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                };
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+            }
+        }
+
+
+        async function sendDataToBackend(transcript) {
+            try {
+                sttsWebSocket.send(transcript);
+            } catch (error) {
+                console.error('Error sending data to backend:', error);
+            }
+        }
+
+        sttsWebSocket.onmessage = async (event) => {
+            const audioBlob = new Blob([event.data], { type: 'audio/mpeg' });
+            const audioURL = URL.createObjectURL(audioBlob);
+            // Create a new audio element and play the audio
+            const hiddenAudio = new Audio(audioURL);
+            hiddenAudio.play();
+            hiddenAudio.onended = () => {
+                isListening = false;
+                startButton.textContent = "Start Listening";
+            };
+        };
+
+        sttsWebSocket.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
+
+        sttsWebSocket.onclose = () => {
+            console.log('WebSocket connection closed.');
+        };
+    </script>
+</body>
+
+</html>
