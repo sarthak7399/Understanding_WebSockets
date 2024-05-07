@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Audio Streaming</title>
+</head>
+
+<body>
+    <h1>Text-to-Audio Streaming</h1>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const ws = new WebSocket('ws://localhost:8000/ws');
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established.');
+        };
+
+        ws.onmessage = async (event) => {
+            const audioBlob = new Blob([event.data], { type: 'audio/mpeg' });
+            const audioURL = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioURL;
+            audioPlayer.play(); // Start playing the audio
+        };
+
+        ws.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed.');
+        };
+    </script>
+</body>
+
+</html>
