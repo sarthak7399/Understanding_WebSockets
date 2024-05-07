@@ -22,7 +22,7 @@ This project consists of a frontend and backend for performing speech-to-text an
 ### Running the Backend
 1. Run the FastAPI server using Uvicorn:
 '''
-uvicorn audio_stream:app --reload
+uvicorn chunked_audio_streaming:app --reload
 '''
 
 
@@ -32,7 +32,7 @@ uvicorn audio_stream:app --reload
 - Web browser with WebSocket support
 
 ### Running the Frontend
-1. Open `index_audio_stream.html` in a web browser.
+1. Open `chunked_audio_streaming.html` in a web browser.
 2. Click on the "Start Listening" button to start speech recognition.
 3. Speak into your microphone. Your speech will be converted to text and sent to the backend.
 4. The backend will process the text, generate a response, and stream the audio back to the frontend for playback.
