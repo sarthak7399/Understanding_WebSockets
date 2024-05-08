@@ -1,0 +1,11 @@
+openai 
+langchain 
+asyncio 
+base64 
+boto3 
+python-dotenv 
+fastapi 
+langchain-openai 
+pydantic 
+typing-extensions 
+uvicorn
