@@ -1,3 +1,5 @@
+# Use frontend App.jsx
+
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
